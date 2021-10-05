@@ -13,7 +13,7 @@ MsnhNet 相关的模型转换工具
 
 #### 简介
 
-msnhnet_onnx 转换工具支持将Pytorch/PaddlePaddle/TensorFlow2/OneFlow等框架构建的模型经过ONNX转换为MsnhNet可用的模型（`.mshnet`和`.bin`）
+msnhnet_onnx 转换工具支持将Pytorch/PaddlePaddle/TensorFlow2/OneFlow等框架构建的模型经过ONNX转换为MsnhNet可用的模型（`.msnhnet`和`.msnhbin`）
 
 #### 环境依赖
 
