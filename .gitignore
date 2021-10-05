@@ -1,0 +1,9 @@
+*.zip
+*.jpg
+*.tgz
+log/
+__pycache__/
+*.pyc
+build/
+dist/
+oneflow_msnhnet.egg-info/

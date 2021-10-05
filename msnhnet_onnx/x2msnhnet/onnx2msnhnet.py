@@ -21,7 +21,7 @@ from msnhnet_onnx.x2msnhnet.handler import BackendHandler
 
 from msnhnet_onnx.x2msnhnet.handlers import *
 from msnhnet_onnx.onnx_wrapper import Node as OnnxNode
-from msnhnet_onnx.x2msnhnet.handler import msnhnet_code_gen, msnhnet_blobname_map
+from msnhnet_onnx.x2msnhnet.handler import msnhnet_params, msnhnet_weights
 import io
 import tempfile
 import os
@@ -48,8 +48,8 @@ logger = logging.getLogger(__name__)
 def from_onnx(
     onnx_model: onnx.ModelProto, inputs, model_weight_dir="/tmp/tmp", do_onnxsim=True, from_tf2=False, from_paddle=False, from_pytorch=False, 
 ):
-    msnhnet_code_gen = []
-    msnhnet_blobname_map = dict()
+    msnhnet_params = []
+    msnhnet_weights = dict()
     input_names = [x.name for x in onnx_model.graph.input]
     if type(inputs) is not dict:
         assert (
@@ -66,7 +66,7 @@ def from_onnx(
         )
     elif do_onnxsim:
         logger.info(
-            "We recommend installing onnx-simplifier so that OneFlow can remove the redundant ONNX nodes"
+            "We recommend installing onnx-simplifier so that MsnhNet can remove the redundant ONNX nodes"
         )
     
     initializer_name = []
@@ -109,7 +109,7 @@ def from_onnx(
             if x.name in delete_node_name:
                 onnx_model.graph.input.remove(x)
 
-    # to solve paddlepaddle2oneflow initializer rename bug
+    # to solve paddlepaddle2msnhnet initializer rename bug
     if from_paddle == True:
         
         graph_input_name = {}
@@ -358,7 +358,7 @@ def get_all_backend_handlers(opset_dict):
 
 
 class MsnhnetBackend(Backend):
-    """ Oneflow Backend for ONNX
+    """ Msnhnet Backend for ONNX
     """
 
     @classmethod
@@ -371,11 +371,11 @@ class MsnhnetBackend(Backend):
         blob_dict=None,
         **kwargs
     ):
-        """Prepare an ONNX model for Oneflow Backend.
+        """Prepare an ONNX model for MsnhNet Backend.
     :param model: The ONNX model to be converted.
     :param device: The device to execute this model on.
     :param strict: Whether to enforce semantic equivalence between the original model
-      and the converted oneflow model, defaults to True (yes, enforce semantic equivalence).
+      and the converted msnhnet model, defaults to True (yes, enforce semantic equivalence).
       Changing to False is strongly discouraged.
       Currently, the strict flag only affects the behavior of MaxPool and AveragePool ops.
     :param logging_level: The logging level, default is INFO. Change it to DEBUG
@@ -410,13 +410,13 @@ class MsnhnetBackend(Backend):
 
     @classmethod
     def _onnx_graph_to_msnhnet(cls, graph_def, opset, strict, blob_dict=None):
-        """ Convert ONNX graph to oneflow.
+        """ Convert ONNX graph to msnhnet.
         :param graph_def: ONNX GraphProto object.
         :param opset: ONNX OperatorSetIdProto list.
         :param strict: whether to enforce semantic equivalence between the original model
-          and the converted oneflow.
-        :param blob_dict: {name: oneflow_blob}, the inputs of onnx graph will be populated with oneflow_blob with the same name
-        :return: The variable dict of the converted oneflow model
+          and the converted msnhnet.
+        :param blob_dict: {name: msnhnet_blob}, the inputs of onnx graph will be populated with msnhnet_blob with the same name
+        :return: The variable dict of the converted msnhnet model
         """
         if blob_dict is None:
             blob_dict = {}
@@ -457,7 +457,7 @@ class MsnhnetBackend(Backend):
             input_dict_items.append((value_info.name, blob_dict[value_info.name]))
 
         # tensor dict: this dictionary is a map from variable names
-        # to the latest produced oneflow variables of the given name.
+        # to the latest produced msnhnet variables of the given name.
         # This dictionary will get updated as we build the graph to
         # record the names of newly produced tensors.
         tensor_dict = dict(input_dict_items)
@@ -484,18 +484,18 @@ class MsnhnetBackend(Backend):
     @classmethod
     def _onnx_node_to_msnhnet_op(
         cls, node, tensor_dict, init_dict, handlers=None, opset=None, strict=True
-    ):
+    ): 
         """
-    Convert onnx node to oneflow op.
+    Convert onnx node to msnhnet op.
     Args:
       node: Onnx node object.
       tensor_dict: Tensor dict of graph.
       opset: Opset version of the operator set. Default 0 means using latest version.
       strict: whether to enforce semantic equivalence between the original model
-        and the converted oneflow model, defaults to True (yes, enforce semantic equivalence).
+        and the converted msnhnet model, defaults to True (yes, enforce semantic equivalence).
         Changing to False is strongly discouraged.
     Returns:
-      oneflow op
+      msnhnet op
     """
         handlers = handlers or cls._get_handlers(opset)
         handler = handlers[node.domain].get(node.op_type, None)

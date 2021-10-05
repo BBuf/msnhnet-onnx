@@ -22,8 +22,8 @@ class BackendHandler:
     SINCE_VERSION = 0
     PARTIAL_SUPPORT = False
     PS_DESCRIPTION = ""
-    MSNHNET_BLOBNAME_MAP = {}
-    MSNHNET_CODE_GEN = []
+    MSNHNET_WEIGHTS = {}
+    MSNHNET_PARAMS = []
     OP_OUTPUS = []
 
     @classmethod
@@ -39,12 +39,12 @@ class BackendHandler:
     @classmethod
     def handle(cls, node, tensor_dict, **kwargs):
         """ Main method in handler. It will find corresponding versioned handle method,
-        whose name format is `version_%d`. So prefix `version_` is reserved in onnx-oneflow.
+        whose name format is `version_%d`. So prefix `version_` is reserved in onnx-msnhnet.
         DON'T use it for other purpose.
 
         :param node: NodeProto for backend.
         :param kwargs: Other args.
-        :return: OneFlowNode for backend.
+        :return: MsnhNetNode for backend.
         """
         ver_handle = getattr(cls, "version_{}".format(cls.SINCE_VERSION), None)
         if ver_handle:
@@ -148,5 +148,5 @@ domain = BackendHandler.domain
 onnx_op = BackendHandler.onnx_op
 partial_support = BackendHandler.partial_support
 ps_description = BackendHandler.ps_description
-msnhnet_blobname_map = BackendHandler.MSNHNET_BLOBNAME_MAP
-msnhnet_code_gen = BackendHandler.MSNHNET_CODE_GEN
+msnhnet_weights = BackendHandler.WEIGHTS
+msnhnet_params = BackendHandler.PARAMS
