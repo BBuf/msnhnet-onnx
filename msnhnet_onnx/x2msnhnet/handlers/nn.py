@@ -13,7 +13,6 @@ from msnhnet_onnx.x2msnhnet.handler import msnhnet_weights, msnhnet_params
 class Conv(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
-        print(len(tensor_dict))
         useBias = len(node.input_tensor_names) == 3
         x = tensor_dict[node.input_tensor_names[0]]
         weight = tensor_dict[node.input_tensor_names[1]]
@@ -32,7 +31,7 @@ class Conv(BackendHandler):
         msnhnet_params.extend(f"  strideY: {node.attrs['strides'][1]}\n")
         msnhnet_params.extend(f"  dilationX: {node.attrs['dilations'][0]}\n")
         msnhnet_params.extend(f"  dilationY: {node.attrs['dilations'][1]}\n")
-        msnhnet_params.extend(f"  groups: {node.attrs['group'][0]}\n")
+        msnhnet_params.extend(f"  groups: {node.attrs['group']}\n")
         msnhnet_params.extend(f"  useBias: {useBias}\n")
         return
 
@@ -45,4 +44,28 @@ class Conv(BackendHandler):
         return cls._common(node, tensor_dict, **kwargs)
 
 
+
+@onnx_op("Relu")
+class Relu(BackendHandler):
+    @classmethod
+    def _common(cls, node, tensor_dict, **kwargs):
+        msnhnet_params.extend(f"act:\n")
+        msnhnet_params.extend(f"  activation: relu\n")
+        return
+
+    @classmethod
+    def version_1(cls, node, tensor_dict, **kwargs):
+        return cls._common(node, tensor_dict, **kwargs)
+
+    @classmethod
+    def version_6(cls, node, tensor_dict, **kwargs):
+        return cls._common(node, tensor_dict, **kwargs)
+
+    @classmethod
+    def version_13(cls, node, tensor_dict, **kwargs):
+        return cls._common(node, tensor_dict, **kwargs)
+    
+    @classmethod
+    def version_14(cls, node, tensor_dict, **kwargs):
+        return cls._common(node, tensor_dict, **kwargs)
 
