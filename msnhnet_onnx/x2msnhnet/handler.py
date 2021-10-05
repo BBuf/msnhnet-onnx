@@ -22,7 +22,7 @@ class BackendHandler:
     SINCE_VERSION = 0
     PARTIAL_SUPPORT = False
     PS_DESCRIPTION = ""
-    MSNHNET_WEIGHTS = {}
+    MSNHNET_WEIGHTS = []
     MSNHNET_PARAMS = []
     OP_OUTPUS = []
 
@@ -148,5 +148,6 @@ domain = BackendHandler.domain
 onnx_op = BackendHandler.onnx_op
 partial_support = BackendHandler.partial_support
 ps_description = BackendHandler.ps_description
-msnhnet_weights = BackendHandler.WEIGHTS
-msnhnet_params = BackendHandler.PARAMS
+msnhnet_weights = BackendHandler.MSNHNET_WEIGHTS
+msnhnet_params = BackendHandler.MSNHNET_PARAMS
+

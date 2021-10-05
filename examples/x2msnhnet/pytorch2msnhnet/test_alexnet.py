@@ -8,7 +8,8 @@ def test_alexnet():
         torchvision.models.alexnet,
         input_size=(1, 3, 224, 224),
         train_flag=False,
-        flow_weight_dir="/tmp/msnhnet"
+        msnhnet_weight_dir="/tmp/msnhnet"
     )
 
+test_alexnet()
 

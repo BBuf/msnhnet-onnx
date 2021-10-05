@@ -15,6 +15,7 @@ from onnx.backend.base import Backend
 from onnx.backend.base import Device
 from onnx.backend.base import namedtupledict
 from onnx.helper import make_opsetid
+from onnx import numpy_helper
 
 from msnhnet_onnx import util
 from msnhnet_onnx.x2msnhnet.handler import BackendHandler
@@ -44,6 +45,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+init_weight_dict = {}
 
 def from_onnx(
     onnx_model: onnx.ModelProto, inputs, model_weight_dir="/tmp/tmp", do_onnxsim=True, from_tf2=False, from_paddle=False, from_pytorch=False, 
@@ -225,6 +227,9 @@ def from_onnx(
     if not os.path.exists("/tmp"):
         os.makedirs("/tmp")
     onnx.save(onnx_model, "/tmp/simp.onnx")
+
+    for x in onnx_model.graph.initializer:
+        init_weight_dict[x.name] = numpy_helper.to_array(x)
 
     d = prepare(onnx_model, blob_dict=inputs)
     output_names = [x.name for x in onnx_model.graph.output]
@@ -425,6 +430,7 @@ class MsnhnetBackend(Backend):
         # initializer: TensorProtos representing the values to initialize
         # a given tensor.
         # initialized: A list of names of the initialized tensors.
+        
         if graph_def.initializer:
             input_dict_items = cls._onnx_initializer_to_input_dict_items(
                 graph_def.initializer
@@ -480,6 +486,33 @@ class MsnhnetBackend(Backend):
             curr_node_output_map = dict(zip(onnx_node.output_tensor_names, output_ops))
             tensor_dict.update(curr_node_output_map)
         return tensor_dict
+
+    @classmethod
+    def _onnx_initializer_to_input_dict_items(cls, initializer):
+        """ Convert ONNX graph initializer to input dict items.
+    :param initializer: ONNX graph initializer, list of TensorProto.
+    :return: List of input dict items.
+    """
+
+        def get_msnhnet_shape(shape):
+            if len(shape) == 0:
+                return (1,)
+            return shape
+
+        return [
+            (
+                init.name,
+                # flow.get_variable(
+                #     name=init.name,
+                #     shape=get_flow_shape(list(init.dims)),
+                #     initializer=flow.zeros_initializer(),
+                #     trainable=True,
+                #     dtype=util.Onnx2FlowDtype(init.data_type),
+                # ),
+                init_weight_dict[init.name],
+            )
+            for init in initializer
+        ]
 
     @classmethod
     def _onnx_node_to_msnhnet_op(

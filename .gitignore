@@ -6,4 +6,4 @@ __pycache__/
 *.pyc
 build/
 dist/
-oneflow_msnhnet.egg-info/
+msnhnet_oneflow.egg-info/
