@@ -8,6 +8,7 @@ try:
 except ImportError:  # will be 3.x series
     pass
 
+from struct import pack
 import copy
 from onnx import defs
 from onnx import numpy_helper
@@ -50,8 +51,8 @@ init_weight_dict = {}
 def from_onnx(
     onnx_model: onnx.ModelProto, inputs, model_weight_dir="/tmp/tmp", do_onnxsim=True, from_tf2=False, from_paddle=False, from_pytorch=False, 
 ):
-    msnhnet_params = []
-    msnhnet_weights = dict()
+    # msnhnet_params = []
+    # msnhnet_weights = []
     input_names = [x.name for x in onnx_model.graph.input]
     if type(inputs) is not dict:
         assert (
@@ -232,9 +233,22 @@ def from_onnx(
         init_weight_dict[x.name] = numpy_helper.to_array(x)
 
     d = prepare(onnx_model, blob_dict=inputs)
+
+    if not os.path.exists(model_weight_dir):
+        os.makedirs(model_weight_dir)
+    
+    with open(os.path.join(model_weight_dir, "model.msnhnet"), "w") as temp_file:
+        for x in msnhnet_params:
+            temp_file.write("%s" % x)
+    
+    with open(os.path.join(model_weight_dir, "model.msnhbin"), "wb") as temp_file:
+        for x in msnhnet_weights:
+            temp_file.write(pack('f', x))
+
     output_names = [x.name for x in onnx_model.graph.output]
     if len(output_names) == 1:
         return d[output_names[0]]
+
     return {output_name: d[output_name] for output_name in output_names}
     
 

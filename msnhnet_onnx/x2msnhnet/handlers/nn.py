@@ -179,7 +179,6 @@ class Flatten(BackendHandler):
 class Gemm(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
-        A = tensor_dict[node.input_tensor_names[0]]
         B = tensor_dict[node.input_tensor_names[1]]
         useBias = False
         if len(node.input_tensor_names) == 3:
@@ -199,9 +198,7 @@ class Gemm(BackendHandler):
             msnhnet_weights.extend(C.flatten().tolist())
         
         msnhnet_params.extend(f"connect:\n")
-        output = 1
-        for _ in range(1, len(A.shape)):
-            output *= A.shape[_]
+        output = B.shape[0]
         msnhnet_params.extend(f"  output: {output}\n")
         msnhnet_params.extend(f"  useBias: {useBias}\n")
         return
