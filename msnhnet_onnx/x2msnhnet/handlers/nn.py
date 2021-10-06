@@ -21,6 +21,7 @@ class Conv(BackendHandler):
             bias = tensor_dict[node.input_tensor_names[2]]
             msnhnet_weights.extend(bias.flatten().tolist())
 
+        msnhnet_params.extend("\n\n")
         msnhnet_params.extend("conv:\n")
         msnhnet_params.extend(f"  filters: {weight.shape[0]} \n")
         msnhnet_params.extend(f"  kSizeX: {node.attrs['kernel_shape'][0]}\n")
@@ -49,6 +50,7 @@ class Conv(BackendHandler):
 class Relu(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        msnhnet_params.extend("\n\n")
         msnhnet_params.extend(f"act:\n")
         msnhnet_params.extend(f"  activation: relu\n")
         return
@@ -73,6 +75,7 @@ class Relu(BackendHandler):
 class MaxPool(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        msnhnet_params.extend("\n\n")
         msnhnet_params.extend(f"maxpool:\n")
         
         kernel_shape = node.attrs["kernel_shape"]
@@ -119,6 +122,7 @@ class MaxPool(BackendHandler):
 class AveragePool(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        msnhnet_params.extend("\n\n")
         msnhnet_params.extend(f"localavgpool:\n")
 
         kernel_shape = node.attrs["kernel_shape"]
@@ -197,6 +201,7 @@ class Gemm(BackendHandler):
         if useBias:
             msnhnet_weights.extend(C.flatten().tolist())
         
+        msnhnet_params.extend("\n\n")
         msnhnet_params.extend(f"connect:\n")
         output = B.shape[0]
         msnhnet_params.extend(f"  output: {output}\n")

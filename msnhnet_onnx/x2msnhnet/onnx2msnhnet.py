@@ -260,6 +260,14 @@ def from_pytorch(
         inputs = [inputs]
     input_names = ["x_{}".format(i) for i in range(len(inputs))]
 
+    assert len(inputs[0].shape) == 4
+
+    msnhnet_params.extend(f"config:\n")
+    msnhnet_params.extend(f"   batch: {inputs[0].shape[0]}\n")
+    msnhnet_params.extend(f"   height: {inputs[0].shape[2]}\n")
+    msnhnet_params.extend(f"   width: {inputs[0].shape[3]}\n")
+    msnhnet_params.extend(f"   channels: {inputs[0].shape[1]}\n")
+
     torch_model = torch_model.to("cpu")
 
     f = io.BytesIO()
@@ -291,6 +299,14 @@ def from_paddle(
         shape=inputs.shape, dtype="float32", name=input_names
     )
 
+    assert len(inputs.shape) == 4
+
+    msnhnet_params.extend(f"config:\n")
+    msnhnet_params.extend(f"   batch: {inputs.shape[0]}\n")
+    msnhnet_params.extend(f"   height: {inputs.shape[2]}\n")
+    msnhnet_params.extend(f"   width: {inputs.shape[3]}\n")
+    msnhnet_params.extend(f"   channels: {inputs.shape[1]}\n")
+
     mode_str = "/tmp/tmp"
 
     paddle.onnx.export(
@@ -316,6 +332,15 @@ def from_tensorflow2(
     tf_model, inputs, model_weight_dir="/tmp", do_onnxsim=True, train_flag=True
 ):
     input_names = "x_0"
+
+    assert len(inputs.shape) == 4
+
+    msnhnet_params.extend(f"config:\n")
+    msnhnet_params.extend(f"   batch: {inputs.shape[0]}\n")
+    msnhnet_params.extend(f"   height: {inputs.shape[2]}\n")
+    msnhnet_params.extend(f"   width: {inputs.shape[3]}\n")
+    msnhnet_params.extend(f"   channels: {inputs.shape[1]}\n")
+    
     # input_spec = paddle.static.InputSpec(
     #     shape=inputs.shape, dtype="float32", name=input_names
     # )
