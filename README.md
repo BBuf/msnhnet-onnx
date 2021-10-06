@@ -9,7 +9,7 @@ MsnhNet 相关的模型转换工具
 [![PyPI version](https://img.shields.io/pypi/v/msnhnet-onnx.svg)](https://pypi.python.org/pypi/msnhnet-onnx/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/msnhnet-onnx.svg)](https://pypi.python.org/pypi/msnhnet-onnx/)
 [![PyPI license](https://img.shields.io/pypi/l/msnhnet-onnx.svg)](https://pypi.python.org/pypi/msnhnet-onnx/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Oneflow-Inc/oneflow_convert_tools/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/BBuf/msnhnet-onnx/pulls)
 
 #### 简介
 
