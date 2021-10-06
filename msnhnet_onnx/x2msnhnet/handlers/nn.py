@@ -82,7 +82,7 @@ class MaxPool(BackendHandler):
         spatial_size = len(kernel_shape)
         strides = node.attrs.get("strides", [1] * spatial_size)
         dilations = node.attrs.get("dilations", [1] * spatial_size)
-        ceil_mode = node.attrs.get("ceil_mode")
+        ceil_mode = node.attrs.get("ceil_mode", 0)
         pads = node.attrs.get("auto_pad", "NOTSET")
         if pads == "NOTSET":
             pads = node.attrs.get("pads", [0] * spatial_size * 2)
@@ -129,7 +129,7 @@ class AveragePool(BackendHandler):
         spatial_size = len(kernel_shape)
         strides = node.attrs.get("strides", [1] * spatial_size)
         dilations = node.attrs.get("dilations", [1] * spatial_size)
-        ceil_mode = node.attrs.get("ceil_mode")
+        ceil_mode = node.attrs.get("ceil_mode", 0)
         pads = node.attrs.get("auto_pad", "NOTSET")
         if pads == "NOTSET":
             pads = node.attrs.get("pads", [0] * spatial_size * 2)
