@@ -8,3 +8,4 @@ __pycache__*
 build/
 dist/
 msnhnet_onnx.egg-info/
+msnhnet_onnx.egg-info*
