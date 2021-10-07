@@ -24,6 +24,8 @@ class BackendHandler:
     PS_DESCRIPTION = ""
     MSNHNET_WEIGHTS = []
     MSNHNET_PARAMS = []
+    MSNHNET_IDS = {}
+    MSNHNET_INPUTS_SHAPE = {}
     OP_OUTPUS = []
 
     @classmethod
@@ -143,6 +145,51 @@ class BackendHandler:
                 attrs[new_k] = attrs.pop(k)
 
         return attrs
+    
+    @classmethod
+    def run_onnx_node(
+        cls,
+        node,
+        tensor_dict,
+        flow_func=None,
+        inputs=None,
+        attrs=None,
+        name="",
+        **kwargs
+    ):
+        """ Helper method to make tensor.
+
+        :param node: OnnxNode object.
+        :param flow_func: Callable OneFlow function. Default is cls.FLOW_FUNC.
+        :param inputs: Inputs tensor. Default is got from node.inputs.
+        :param attrs: Attributes. Default is node.attrs.
+        :param name: Node name.
+        :param kwargs: Other args.
+        :return: Tensor.
+        """
+        if flow_func is None:
+            flow_func = cls.FLOW_FUNC
+        if inputs is None:
+            inputs = [tensor_dict.get(inp, None) for inp in node.input_tensor_names]
+        if attrs is None:
+            attrs = copy.deepcopy(node.attrs)
+        if name != "":
+            attrs["name"] = name
+        for inp in node.input_tensor_names:
+            if tensor_dict[inp] not in cls.ONEFLOW_BLOBNAME_MAP:
+                cls.ONEFLOW_BLOBNAME_MAP[tensor_dict[inp]] = inp
+        cls.OP_OUTPUS = []
+        for oup in node.output_tensor_names:
+            cls.OP_OUTPUS.append(oup)
+        y = cls._run_flow_func(flow_func, inputs, attrs)
+        if type(y) == list():
+            for x in cls.OP_OUTPUS:
+                if y[x] not in cls.ONEFLOW_BLOBNAME_MAP:
+                    cls.ONEFLOW_BLOBNAME_MAP[y[x]] = x
+        else:
+            if y not in cls.ONEFLOW_BLOBNAME_MAP:
+                cls.ONEFLOW_BLOBNAME_MAP[y] = cls.OP_OUTPUS[0]
+        return y
 
 domain = BackendHandler.domain
 onnx_op = BackendHandler.onnx_op
@@ -150,4 +197,6 @@ partial_support = BackendHandler.partial_support
 ps_description = BackendHandler.ps_description
 msnhnet_weights = BackendHandler.MSNHNET_WEIGHTS
 msnhnet_params = BackendHandler.MSNHNET_PARAMS
+msnhnet_layer_ids = BackendHandler.MSNHNET_IDS
+msnhnet_input_layer_shape = BackendHandler.MSNHNET_INPUTS_SHAPE
 

@@ -7,8 +7,8 @@ import numpy as np
 
 from msnhnet_onnx.x2msnhnet.handler import BackendHandler
 from msnhnet_onnx.x2msnhnet.handler import onnx_op
-from msnhnet_onnx.x2msnhnet.handler import msnhnet_weights, msnhnet_params
-
+from msnhnet_onnx.x2msnhnet.handler import msnhnet_weights, msnhnet_params, msnhnet_layer_ids, msnhnet_input_layer_shape
+import msnhnet_onnx.x2msnhnet.handlers.global_var as gv
 @onnx_op("Conv")
 class Conv(BackendHandler):
     @classmethod
@@ -34,6 +34,11 @@ class Conv(BackendHandler):
         msnhnet_params.extend(f"  dilationY: {node.attrs['dilations'][1]}\n")
         msnhnet_params.extend(f"  groups: {node.attrs['group']}\n")
         msnhnet_params.extend(f"  useBias: {int(useBias)}\n")
+
+        for i in range(len(node.output_tensor_names)):
+            msnhnet_layer_ids[node.output_tensor_names[i]] = gv.msnhnet_layer_cnt
+            gv.msnhnet_layer_cnt += 1
+        
         return
 
     @classmethod
@@ -65,6 +70,11 @@ class BatchNormalization(BackendHandler):
         msnhnet_params.extend(f"batchnorm:\n")
         msnhnet_params.extend(f"  activation: none\n")
         msnhnet_params.extend(f"  eps: {float(epsilon)}\n")
+
+        for i in range(len(node.output_tensor_names)):
+            msnhnet_layer_ids[node.output_tensor_names[i]] = gv.msnhnet_layer_cnt
+            gv.msnhnet_layer_cnt += 1
+        
         return
 
     @classmethod
@@ -90,6 +100,11 @@ class Relu(BackendHandler):
         msnhnet_params.extend("\n\n")
         msnhnet_params.extend(f"act:\n")
         msnhnet_params.extend(f"  activation: relu\n")
+
+        for i in range(len(node.output_tensor_names)):
+            msnhnet_layer_ids[node.output_tensor_names[i]] = gv.msnhnet_layer_cnt
+            gv.msnhnet_layer_cnt += 1
+        
         return
 
     @classmethod
@@ -133,6 +148,11 @@ class MaxPool(BackendHandler):
         msnhnet_params.extend(f"  strideX: {strides[0]}\n")
         msnhnet_params.extend(f"  strideY: {strides[1]}\n")
         msnhnet_params.extend(f"  ceilMode: {ceil_mode}\n")
+
+        for i in range(len(node.output_tensor_names)):
+            msnhnet_layer_ids[node.output_tensor_names[i]] = gv.msnhnet_layer_cnt
+            gv.msnhnet_layer_cnt += 1
+        
         return
 
     @classmethod
@@ -180,6 +200,11 @@ class AveragePool(BackendHandler):
         msnhnet_params.extend(f"  strideX: {strides[0]}\n")
         msnhnet_params.extend(f"  strideY: {strides[1]}\n")
         msnhnet_params.extend(f"  ceilMode: {ceil_mode}\n")
+
+        for i in range(len(node.output_tensor_names)):
+            msnhnet_layer_ids[node.output_tensor_names[i]] = gv.msnhnet_layer_cnt
+            gv.msnhnet_layer_cnt += 1
+
         return
 
     @classmethod
@@ -198,6 +223,25 @@ class AveragePool(BackendHandler):
     def version_11(cls, node, tensor_dict, **kwargs):
         return cls._common(node, tensor_dict, **kwargs)
 
+
+@onnx_op("GlobalAveragePool")
+class GlobalAverageMaxPool(BackendHandler):
+    @classmethod
+    def version_1(cls, node, tensor_dict, **kwargs):
+        kernel_h = msnhnet_input_layer_shape[node.input_tensor_names[0]][2]
+        kernel_w = msnhnet_input_layer_shape[node.input_tensor_names[0]][3]
+
+        msnhnet_params.extend("\n\n")
+        msnhnet_params.extend(f"localavgpool:\n")
+
+        msnhnet_params.extend(f"  kSizeX: {kernel_h}\n")
+        msnhnet_params.extend(f"  kSizeY: {kernel_w}\n")
+        msnhnet_params.extend(f"  paddingX: {0}\n")
+        msnhnet_params.extend(f"  paddingY: {0}\n")
+        msnhnet_params.extend(f"  strideX: {kernel_h}\n")
+        msnhnet_params.extend(f"  strideY: {kernel_w}\n")
+        msnhnet_params.extend(f"  ceilMode: {0}\n")
+        return
 @onnx_op("Flatten")
 class Flatten(BackendHandler):
     @classmethod
@@ -243,6 +287,11 @@ class Gemm(BackendHandler):
         output = B.shape[0]
         msnhnet_params.extend(f"  output: {output}\n")
         msnhnet_params.extend(f"  useBias: {int(useBias)}\n")
+
+        for i in range(len(node.output_tensor_names)):
+            msnhnet_layer_ids[node.output_tensor_names[i]] = gv.msnhnet_layer_cnt
+            gv.msnhnet_layer_cnt += 1
+
         return
 
     @classmethod

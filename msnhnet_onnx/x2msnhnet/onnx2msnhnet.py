@@ -23,7 +23,7 @@ from msnhnet_onnx.x2msnhnet.handler import BackendHandler
 
 from msnhnet_onnx.x2msnhnet.handlers import *
 from msnhnet_onnx.onnx_wrapper import Node as OnnxNode
-from msnhnet_onnx.x2msnhnet.handler import msnhnet_params, msnhnet_weights
+from msnhnet_onnx.x2msnhnet.handler import msnhnet_params, msnhnet_weights, msnhnet_input_layer_shape
 import io
 import tempfile
 import os
@@ -228,6 +228,12 @@ def from_onnx(
     if not os.path.exists("/tmp"):
         os.makedirs("/tmp")
     onnx.save(onnx_model, "/tmp/simp.onnx")
+
+    for val in onnx_model.graph.value_info:
+        shape = []
+        for j in range(len(val.type.tensor_type.shape.dim)):
+            shape.append(val.type.tensor_type.shape.dim[j].dim_value)
+        msnhnet_input_layer_shape[val.name] = shape
 
     for x in onnx_model.graph.initializer:
         init_weight_dict[x.name] = numpy_helper.to_array(x)
