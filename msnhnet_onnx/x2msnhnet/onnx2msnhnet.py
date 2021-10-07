@@ -30,10 +30,23 @@ import os
 import shutil
 import numpy as np
 import onnx
-import torch
-import paddle
-import tensorflow as tf
-import tf2onnx
+
+try:
+    import torch
+except ImportError:
+    print('If you want to convert pytorch model to msnhnet model, please install pytorch first')
+
+try:
+    import paddle
+except ImportError:
+    print('If you want to convert paddle model to msnhnet model, please install paddle first')
+
+try:
+    import tensorflow as tf
+    import tf2onnx
+except ImportError:
+    print('If you want to convert tensorflow2 model to msnhnet model, please install tensorflow and tf2onnx first')
+
 import logging
 import onnxoptimizer
 
