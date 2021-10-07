@@ -45,6 +45,43 @@ class Conv(BackendHandler):
         return cls._common(node, tensor_dict, **kwargs)
 
 
+@onnx_op("BatchNormalization")
+class BatchNormalization(BackendHandler):
+    @classmethod
+    def _common(cls, node, tensor_dict, **kwargs):
+        x = tensor_dict[node.input_tensor_names[0]]
+        scale = tensor_dict[node.input_tensor_names[1]]
+        offset = tensor_dict[node.input_tensor_names[2]]
+        mean = tensor_dict[node.input_tensor_names[3]]
+        variance = tensor_dict[node.input_tensor_names[4]]
+        epsilon = node.attrs.get("epsilon", 1e-5)
+
+        msnhnet_weights.extend(scale.flatten().tolist())
+        msnhnet_weights.extend(offset.flatten().tolist())
+        msnhnet_weights.extend(mean.flatten().tolist())
+        msnhnet_weights.extend(variance.flatten().tolist())
+
+        msnhnet_params.extend("\n\n")
+        msnhnet_params.extend(f"batchnorm:\n")
+        msnhnet_params.extend(f"  activation: none\n")
+        msnhnet_params.extend(f"  eps: {float(epsilon)}\n")
+        return
+
+    @classmethod
+    def version_1(cls, node, tensor_dict, **kwargs):
+        return cls._common(node, tensor_dict, **kwargs)
+
+    @classmethod
+    def version_6(cls, node, tensor_dict, **kwargs):
+        return cls._common(node, tensor_dict, **kwargs)
+
+    @classmethod
+    def version_7(cls, node, tensor_dict, **kwargs):
+        return cls._common(node, tensor_dict, **kwargs)
+
+    @classmethod
+    def version_9(cls, node, tensor_dict, **kwargs):
+        return cls._common(node, tensor_dict, **kwargs)
 
 @onnx_op("Relu")
 class Relu(BackendHandler):
