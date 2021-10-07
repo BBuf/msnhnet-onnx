@@ -33,7 +33,7 @@ class Conv(BackendHandler):
         msnhnet_params.extend(f"  dilationX: {node.attrs['dilations'][0]}\n")
         msnhnet_params.extend(f"  dilationY: {node.attrs['dilations'][1]}\n")
         msnhnet_params.extend(f"  groups: {node.attrs['group']}\n")
-        msnhnet_params.extend(f"  useBias: {useBias}\n")
+        msnhnet_params.extend(f"  useBias: {int(useBias)}\n")
         return
 
     @classmethod
@@ -205,7 +205,7 @@ class Gemm(BackendHandler):
         msnhnet_params.extend(f"connect:\n")
         output = B.shape[0]
         msnhnet_params.extend(f"  output: {output}\n")
-        msnhnet_params.extend(f"  useBias: {useBias}\n")
+        msnhnet_params.extend(f"  useBias: {int(useBias)}\n")
         return
 
     @classmethod
