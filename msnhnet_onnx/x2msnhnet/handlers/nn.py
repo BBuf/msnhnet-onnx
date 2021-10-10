@@ -363,10 +363,10 @@ class Gemm(BackendHandler):
         transA = node.attrs.get("transA", 0)
         transB = node.attrs.get("transB", 0)
 
-        if transB == True:
-            msnhnet_weights.extend(B.T.flatten().tolist())
-        else:
+        if transB == 1:
             msnhnet_weights.extend(B.flatten().tolist())
+        else:
+            msnhnet_weights.extend(B.T.flatten().tolist())
         
         if useBias:
             msnhnet_weights.extend(C.flatten().tolist())
