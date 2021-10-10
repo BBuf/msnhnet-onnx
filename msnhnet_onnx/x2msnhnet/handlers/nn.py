@@ -13,6 +13,16 @@ import msnhnet_onnx.x2msnhnet.handlers.global_var as gv
 class Conv(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
         useBias = len(node.input_tensor_names) == 3
         x = tensor_dict[node.input_tensor_names[0]]
         weight = tensor_dict[node.input_tensor_names[1]]
@@ -54,6 +64,16 @@ class Conv(BackendHandler):
 class BatchNormalization(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
         x = tensor_dict[node.input_tensor_names[0]]
         scale = tensor_dict[node.input_tensor_names[1]]
         offset = tensor_dict[node.input_tensor_names[2]]
@@ -97,6 +117,16 @@ class BatchNormalization(BackendHandler):
 class Relu(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
         msnhnet_params.extend("\n\n")
         msnhnet_params.extend(f"act:\n")
         msnhnet_params.extend(f"  activation: relu\n")
@@ -127,6 +157,16 @@ class Relu(BackendHandler):
 class MaxPool(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
         msnhnet_params.extend("\n\n")
         msnhnet_params.extend(f"maxpool:\n")
         
@@ -179,6 +219,16 @@ class MaxPool(BackendHandler):
 class AveragePool(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
         msnhnet_params.extend("\n\n")
         msnhnet_params.extend(f"localavgpool:\n")
 
@@ -228,6 +278,16 @@ class AveragePool(BackendHandler):
 class GlobalAverageMaxPool(BackendHandler):
     @classmethod
     def version_1(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
         kernel_h = msnhnet_input_layer_shape[node.input_tensor_names[0]][2]
         kernel_w = msnhnet_input_layer_shape[node.input_tensor_names[0]][3]
 
@@ -241,11 +301,30 @@ class GlobalAverageMaxPool(BackendHandler):
         msnhnet_params.extend(f"  strideX: {kernel_h}\n")
         msnhnet_params.extend(f"  strideY: {kernel_w}\n")
         msnhnet_params.extend(f"  ceilMode: {0}\n")
+
+        for i in range(len(node.output_tensor_names)):
+            msnhnet_layer_ids[node.output_tensor_names[i]] = gv.msnhnet_layer_cnt
+            gv.msnhnet_layer_cnt += 1
+        
         return
 @onnx_op("Flatten")
 class Flatten(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
+        for i in range(len(node.output_tensor_names)):
+            msnhnet_layer_ids[node.output_tensor_names[i]] = gv.msnhnet_layer_cnt
+            gv.msnhnet_layer_cnt += 1
+
         return
 
     @classmethod
@@ -264,6 +343,16 @@ class Flatten(BackendHandler):
 class Gemm(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
         B = tensor_dict[node.input_tensor_names[1]]
         useBias = False
         if len(node.input_tensor_names) == 3:

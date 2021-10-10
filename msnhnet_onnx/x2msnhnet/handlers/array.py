@@ -45,7 +45,16 @@ class Add(BackendHandler):
 class Clip(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
-        
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+
         if cls.SINCE_VERSION < 11:
             # min/max were required and passed as attributes
             clip_value_min = node.attrs.get("min", None)
@@ -108,6 +117,16 @@ def buildView(dim0, dim1, dim2):
 class Reshape(BackendHandler):
     @classmethod
     def _common(cls, node, tensor_dict, **kwargs):
+        if gv.msnhnet_layer_cnt > 0:
+            if msnhnet_layer_ids[node.input_tensor_names[0]] != gv.msnhnet_layer_cnt - 1:
+                layers = str(msnhnet_layer_ids[node.input_tensor_names[0]])
+                
+                msnhnet_params.extend(f"\n\n")
+                msnhnet_params.extend(f"route:\n")
+                msnhnet_params.extend(f"  layers: {layers}\n")
+                msnhnet_params.extend(f"  addModel: 0\n")
+                gv.msnhnet_layer_cnt += 1
+        
         init_dict = kwargs["init_dict"]
         x = msnhnet_input_layer_shape[node.input_tensor_names[0]]
         if cls.SINCE_VERSION == 1:
