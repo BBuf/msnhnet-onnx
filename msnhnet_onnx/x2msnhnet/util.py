@@ -15,7 +15,7 @@ from msnhnet_onnx.x2msnhnet.handler import msnhnet_params, msnhnet_weights
 from msnhnet_onnx.x2msnhnet.onnx2msnhnet import from_onnx, from_pytorch, from_paddle, from_tensorflow2
 
 def load_pytorch_module_and_check(
-    pt_module_class,
+    pt_module,
     input_size=None,
     input_min_val=0.0,
     input_max_val=1.0,
@@ -25,7 +25,9 @@ def load_pytorch_module_and_check(
 ):
     if input_size is None:
         input_size = (2, 4, 3, 5)
-    pt_module = pt_module_class()
+    # pt_module = pt_module_class(pretrained=True)
+    # pt_module.eval()
+    # pt_module.load_state_dict(torch.load("/home/zhangxiaoyu/msnhnet-onnx/examples/x2msnhnet/pytorch2msnhnet/mnist_0.98.pkl"))
 
     model_weight_save_dir = msnhnet_weight_dir
     x = np.ones(input_size)

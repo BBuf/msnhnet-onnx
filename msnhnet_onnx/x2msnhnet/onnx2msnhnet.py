@@ -263,6 +263,10 @@ def from_onnx(
     with open(os.path.join(model_weight_dir, "model.msnhbin"), "wb") as temp_file:
         for x in msnhnet_weights:
             temp_file.write(pack('f', x))
+    
+    # with open(os.path.join(model_weight_dir, "model.txt"), "w") as temp_file:
+    #     for x in msnhnet_weights:
+    #         temp_file.write("%s\n" % x)
 
     output_names = [x.name for x in onnx_model.graph.output]
     if len(output_names) == 1:
