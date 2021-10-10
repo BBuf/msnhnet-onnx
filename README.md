@@ -61,6 +61,7 @@ python3 setup.py install
 
 
 - 2021/10/5 初始化项目
+- 2021/10/10 测试通过Pytorch的AlexNet，VGG16，ResNet18，MobileNetV2转为ONNX，发布0.1.0版本。
 
 
 

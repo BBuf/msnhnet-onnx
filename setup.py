@@ -9,7 +9,7 @@ long_description += "Email: 1182563586@qq.com"
 
 setuptools.setup(
     name="msnhnet_onnx",
-    version="0.0.1.alpha",
+    version="0.0.1",
     author="zhangxiaoyu",
     author_email="1182563586@qq.com",
     description="a toolkit for converting ONNX model to msnhnet.",
