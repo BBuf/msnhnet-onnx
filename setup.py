@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 import setuptools
 
-long_description = "msnhnet_onnx is a toolkit for converting trained model of OneFlow to ONNX and ONNX to OneFlow.\n\n"
+long_description = "msnhnet_onnx is a toolkit for converting trained model of Pytorch/PaddlePaddle/TensorFlow/OneFlow to ONNX and ONNX to MsnhNet.\n\n"
 long_description += "Usage: msnhnet_onnx --model_dir src --save_file dist\n"
 long_description += "GitHub: https://github.com/BBuf/msnhnet-onnx\n"
 long_description += "Email: 1182563586@qq.com"

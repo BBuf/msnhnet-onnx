@@ -25,9 +25,6 @@ def load_pytorch_module_and_check(
 ):
     if input_size is None:
         input_size = (2, 4, 3, 5)
-    # pt_module = pt_module_class(pretrained=True)
-    # pt_module.eval()
-    # pt_module.load_state_dict(torch.load("/home/zhangxiaoyu/msnhnet-onnx/examples/x2msnhnet/pytorch2msnhnet/mnist_0.98.pkl"))
 
     model_weight_save_dir = msnhnet_weight_dir
     x = np.ones(input_size)
