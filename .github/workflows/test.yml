@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    if: github.event.pull_request.draft == false && github.base_ref == 'main' && contains(github.event.pull_request.requested_reviewers.*.login, 'msnhnet-ci-bot')
+    if: github.event.pull_request.draft == false && github.base_ref == 'master'
     runs-on: ubuntu-latest
     strategy:
       matrix:
