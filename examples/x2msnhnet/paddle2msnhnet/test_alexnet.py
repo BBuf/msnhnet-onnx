@@ -138,7 +138,7 @@ def AlexNet(**args):
 
 def test_alexnet():
     load_paddle_module_and_check(
-        AlexNet, input_size=(1, 3, 224, 224), train_flag=False, flow_weight_dir="/tmp/alexnet"
+        AlexNet, input_size=(1, 3, 224, 224), train_flag=False, msnhnet_weight_dir="/tmp/alexnet"
     )
 
 # If you want to use MsnhNet to get correct inference results, then you need to load pre-training weights!!!
